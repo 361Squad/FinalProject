@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect
 import flask
 import recommend
+import json
 
 app = Flask(__name__)
 
 profileURL = "Test"
-gameJSON = {}
+gamesJSON = {}
 
 @app.route('/')
 def home():
@@ -18,7 +19,7 @@ def crunchProfile():
 	
 	profileID = recommend.get_steamID64(profileURL) #get steam id from recommend.py
 	recommend_stuff(profileID) #get json
-	return render_template('display.html', data=gameJSON) #render template, pass in json
+	return render_template('display.html', data=gamesJSON) #render template, pass in json
 
 def recommend_stuff(profile_id): #gets the json result from recommend.py
 	recommends = recommend.recommend(profile_id)
@@ -26,8 +27,15 @@ def recommend_stuff(profile_id): #gets the json result from recommend.py
 	for rec in recommends:
 		rec_dict = {"appId" : rec[2], "title": rec[3], "fromAppId": rec[0], "fromTitle":rec[1]}
 		games.append(rec_dict)
-	global gameJSON
-	gameJSON = flask.jsonify({"games": games}) #json of recommendations
+	global gamesJSON
+	gamesJSON = ({"games": games}) #json of recommendations
+	writeJSONToDirectory()
+
+def writeJSONToDirectory():
+	fd = open('static/data.json', 'w')
+	data = json.dumps(gamesJSON)
+	fd.write(data)
+	fd.close()
 
 
 if __name__ == "__main__":
