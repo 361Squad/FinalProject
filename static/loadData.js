@@ -17,6 +17,6 @@ function loadJSON(){
 }
 
 function writeToDom(recTitle, fromTitle, index){
-     $("#results").append("<div> Game# " + i + "<div> Recommended: " + recTitle + "</div><div> From: " + fromTitle + "</div></div>");
+     $("#results").append("<div><h4>Game# " + i + "</h4>" + "<div> Recommended: " + recTitle + "</div><div> From: " + fromTitle + "</div></div>");
      $("#results").append("<br>")
 }
