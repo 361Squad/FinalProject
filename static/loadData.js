@@ -10,12 +10,13 @@ function loadJSON(){
             console.log(data.games[0]);
             length = data.games.length;
             for(i = 0; i<length; i++){
-                writeToDom(data.games[i].title);
+                writeToDom(data.games[i].title, data.games[i].fromTitle, i);
             }
         });
     });
 }
 
-function writeToDom(content){
-     $("#results").append("<li>" + content + "</li>");
+function writeToDom(recTitle, fromTitle, index){
+     $("#results").append("<div> Game# " + i + "<div> Recommended: " + recTitle + "</div><div> From: " + fromTitle + "</div></div>");
+     $("#results").append("<br>")
 }

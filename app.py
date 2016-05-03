@@ -19,7 +19,7 @@ def crunchProfile():
 	
 	profileID = recommend.get_steamID64(profileURL) #get steam id from recommend.py
 	recommend_stuff(profileID) #get json
-	return render_template('display.html', data=gamesJSON) #render template, pass in json
+	return render_template('display.html') #render template, pass in json
 
 def recommend_stuff(profile_id): #gets the json result from recommend.py
 	recommends = recommend.recommend(profile_id)
