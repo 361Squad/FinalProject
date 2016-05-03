@@ -188,26 +188,4 @@ def recommend(uid):
         chosen.append((start_member['AppId'],start_member['Title'],chosen_member['AppId'],chosen_member['Title']))
     return chosen
 
-def runScript():
-    # example usage
-    url = raw_input('url: ')
-    uid_test = get_steamID64(url)
-    print "<<PROCESSING UID>>"
-    start_time = time.time()
-    for row in recommend(uid_test):
-        print row
-    print "Elapsed time: " + str(time.time()-start_time)
-    print "------------------"
-
-    # or for a list of uids
-    uid_list = (76561198040715074,76561198048971211,76561198049109177,76561198039551867,76561198058290543) # Cameron, Aaron (derpking7), TJ (thunderwaffle), <random_friend> (TheWeedHead), Mark (Solari985)
-    for uid in uid_list:
-        print "<<PROCESSING UID>>"
-        start_time = time.time()
-        for row in recommend(uid):
-            print row
-        print "Elapsed time: " + str(time.time()-start_time)
-        print "------------------"
-
-#runScript()
 
