@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title></title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    </head>
+    <body>
+        <div class="submit">
+            <h1>Enter Steam Profile URL</h1>
+            <form action="/analyze/" method="post">
+                <input type="text" name="profileURL">
+                <p><button id="submitButton"/>Submit</p>
+            </form>
+        </div>
+        <div id="container" style = "width:100%">
+            {% block recs %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
