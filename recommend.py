@@ -1,21 +1,26 @@
 import numpy as np
 import pandas as pd
 import requests
-import time
 
 import scipy.sparse as spp
 from scipy.spatial import distance
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-import json
+import time
 import math
 
 from xml.etree import cElementTree as ET
 
+import pickle
+# import cPickle as pickle
+import os.path
+from model import ModelPersist
+
 class CONST(object):
     API_KEY = "AB0D4135B7DAF7A61E9BCC9903AD330A"
     DB_SOURCE = "./static/db.csv"
+    MODEL_SOURCE = "./static/model.p"
     def __setattr__(self, *_):
         pass
 
@@ -41,15 +46,26 @@ def get_steamID64(url):
         if ele.tag == 'steamID64':
             return int(ele.text)
     return -1
-    
+  
+def check_cold_start(url):
+    r = requests.get(url)
+    if r.json()['response']['game_count'] == 0:
+        return True
+    return False
     
 def get_user_json(url):
     r = requests.get(url)
-    if r.json()['response']['game_count'] == 0:
-        print 'No games on the account'
-        print 'To implement: cold start'
-        raise Exception('No games')
+    # if r.json()['response']['game_count'] == 0:
+    #     print 'No games on the account'
+    #     #raise Exception('No games')
     return r.json()
+
+def get_user_data_from_json(json_file):
+    temp = pd.DataFrame(json_file['response']['games'])
+    if 'playtime_2weeks' not in temp.columns:
+        temp['playtime_2weeks'] = 0
+    temp.columns = ['AppId','playtime_2weeks','playtime_forever']
+    return temp
 
 def get_user_data(url):
     temp = pd.DataFrame(get_user_json(url)['response']['games'])
@@ -105,6 +121,16 @@ def one_hot_encoding(df,columns=[],sep="*"):
         df.drop([col],axis=1,inplace=True)
     return df
 
+def cold_start():
+    if os.path.isfile(CONST.MODEL_SOURCE) :
+        model = pickle.load(open(CONST.MODEL_SOURCE, 'rb'))
+        return model.get_tuple()
+    else:
+        model = ModelPersist()
+        ret = model.get_tuple()
+        pickle.dump(model, open(CONST.MODEL_SOURCE, 'wb'))
+        return ret
+
 # @param: uid as numeric
 # @return: list of tuples: ( appid(owned_game), name(owned_game), appid(predicted_game), name(predicted_game) )
 def recommend(uid):
@@ -117,7 +143,11 @@ def recommend(uid):
     db = pd.get_dummies(db,columns=['Developer','Publisher'])
     # load user data
     access_string = 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key='+CONST.API_KEY+'&steamid='+str(uid)+'&format=json&include_played_free_games=true'
-    user_data = get_user_data(access_string)
+    if check_cold_start(access_string):
+        return [cold_start()]
+    json_file = get_user_json(access_string)
+    game_count = json_file['response']['game_count']
+    user_data = get_user_data_from_json(json_file)
     # generate weights column + remove playtime columns
     misval(user_data,columns=['playtime_2weeks','playtime_forever'],categorical=False)
     generate_weights(user_data,remove_columns=True)
@@ -130,6 +160,16 @@ def recommend(uid):
     owned_games = set(user_data['AppId'].to_dict().values())
     if len(user_data.index) > 10:
         user_data = user_data.iloc[0:10]
+
+    # Update persistent 'cold start' model
+    if os.path.isfile(CONST.MODEL_SOURCE):
+        model = pickle.load(open(CONST.MODEL_SOURCE, 'rb'))
+    else:
+        model = ModelPersist()
+
+    model.update(user_data, game_count, uid)
+    pickle.dump(model, open(CONST.MODEL_SOURCE, 'wb'))
+
     # Tf-idf word processing
     
 #   Column Weighting
@@ -187,5 +227,3 @@ def recommend(uid):
         chosen_list.append(chosen_member['AppId'])
         chosen.append((start_member['AppId'],start_member['Title'],chosen_member['AppId'],chosen_member['Title']))
     return chosen
-
-
