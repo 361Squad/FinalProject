@@ -24,13 +24,15 @@
         </div>
         <div id="container" class="submit">
             {% if flag %}
-            <script type="text/javascript">
-                loadJSON();
-            </script>
-            <h1>Recommendations</h1>
-            <div id="results"></div>
-            <br>
-            <br>
+                {% if testData != "" %}
+                <script type="text/javascript">
+                    loadJSON({{ testData|safe }});
+                </script>
+                <h1>Recommendations</h1>
+                <div id="results"></div>
+                <br>
+                <br>
+                {% endif %}
             {% else %}
             {% endif %}
         </div>
