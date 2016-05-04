@@ -9,9 +9,7 @@
         <script type="text/javascript" src="{{url_for('static', filename='loadData.js')}}"></script>
         <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.blue_grey-blue.min.css" />
         <script src="//storage.googleapis.com/code.getmdl.io/1.1.1/material.min.js"></script>
-        {% block head %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-        {% endblock %}
     </head>
     <body>
         <div class="submit">
@@ -21,7 +19,7 @@
                     <label class="mdl-textfield__label">Steam Profile URL: </label>
                     <input type="text" size="40" class="mdl-textfield__input" name="profileURL">
                 </div>
-                <p><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="submitButton"/>Recommend</p>
+                <p><button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="submitButton"/>Recommend</button></p>
             </form>
         </div>
         <div id="container" class="submit">
