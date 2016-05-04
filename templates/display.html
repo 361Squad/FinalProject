@@ -1,4 +1,7 @@
 {% extends "home.html" %}
+{% block head %}
+    <script type="text/javascript" src="{{url_for('static', filename='loadData.js')}}"></script>
+{% endblock %}
 {% block recs %}
 	<script type="text/javascript">
 		loadJSON();

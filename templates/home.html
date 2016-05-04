@@ -9,8 +9,9 @@
         <script type="text/javascript" src="{{url_for('static', filename='loadData.js')}}"></script>
         <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.blue_grey-blue.min.css" />
         <script src="//storage.googleapis.com/code.getmdl.io/1.1.1/material.min.js"></script>
+        {% block head %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-
+        {% endblock %}
     </head>
     <body>
         <div class="submit">
@@ -24,8 +25,16 @@
             </form>
         </div>
         <div id="container" class="submit">
-            {% block recs %}
-            {% endblock %}
+            {% if flag %}
+            <script type="text/javascript">
+                loadJSON();
+            </script>
+            <h1>Recommendations</h1>
+            <div id="results"></div>
+            <br>
+            <br>
+            {% else %}
+            {% endif %}
         </div>
     </body>
 </html>

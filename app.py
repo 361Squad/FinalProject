@@ -7,21 +7,24 @@ app = Flask(__name__)
 
 profileURL = ""
 gamesJSON = {}
+pFlag = False
 
 @app.route('/')
 def home():
-	return render_template('home.html')
+	return render_template('home.html', flag=pFlag)
 
 @app.route("/analyze/", methods=['POST'])
 def crunchProfile():
 	global profileURL
+	global pFlag
 	profileURL = request.form['profileURL']
-	if(profileURL == ""):
-		return redirect('/')
+	if(profileURL == "" or not checkSteamURL(profileURL)):
+		pFlag = False
 	else:
 		profileID = recommend.get_steamID64(profileURL) #get steam id from recommend.py
 		recommend_stuff(profileID) #get json
-		return render_template('display.html') #render template, pass in json
+		pFlag = True
+	return redirect('/')
 
 def recommend_stuff(profile_id): #gets the json result from recommend.py
 	recommends = recommend.recommend(profile_id)
@@ -39,6 +42,8 @@ def writeJSONToDirectory():
 	fd.write(data)
 	fd.close()
 
+def checkSteamURL(url):
+	return "https://steamcommunity.com/id/" in url or "http://steamcommunity.com/id/" in url
 
 if __name__ == "__main__":
 	app.debug = True
